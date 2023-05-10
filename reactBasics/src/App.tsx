@@ -1,33 +1,41 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, useEffect } from 'react'
 import './App.css'
+import { IUser } from './types';
+import Username from './components/Username';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const [user, setUser] = useState<IUser>({name: '', address: '', age: 0});
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+
+    const value = e.currentTarget.value;
+
+    setUser({...user, name: value});
+  }
+
+  useEffect(() => {
+    const getData = async () => {
+      const res = await fetch("https://randomuser.me/api/");
+      const data = await res.json();
+      const firstUser = data.results[0];
+
+      setUser((prev) => {
+        return {
+          ...prev,
+          name: firstUser.name.first,
+          age: firstUser.dob.age,
+          address: firstUser.location.street.name
+        }
+      })
+    }
+    getData();
+  }, []);
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Username user = {user}/>
+      <input type="text" value={user.name} onChange={handleChange} />
     </>
   )
 }
