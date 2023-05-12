@@ -1,7 +1,6 @@
 import express, { Request, Response, application } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import bodyParser from 'body-parser';
-import e from 'express';
 
 const app = express();
 const port = 3000;
